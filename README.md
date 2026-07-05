@@ -1,134 +1,276 @@
-# Student Registration System
+# Student Registration Flask App - CI/CD Assignment
 
-A simple **Flask** web application to manage student records with **MongoDB** as the backend database. Users can **add, view, update, and delete** student details.
+This repository contains a simple Flask web application for managing student records. The assignment deliverables are included:
 
----
+- `Jenkinsfile` for Jenkins CI/CD
+- `.github/workflows/flask-ci-cd.yml` for GitHub Actions CI/CD
+- Pytest test suite in `test_app.py`
+- Documentation for prerequisites, setup, triggers, notifications, and deployment
 
-## Features
+## Application Overview
 
-* List all students on the home page
-* Add a new student
-* Update existing student details
-* Delete a student with confirmation
-* Simple and responsive UI using Bootstrap
+The app supports basic student management:
 
----
+- View student records
+- Add a student
+- Update student details
+- Delete a student
 
-## Tech Stack
+Technology used:
 
-* **Backend:** Python, Flask
-* **Database:** MongoDB (via Flask-PyMongo)
-* **Frontend:** HTML, Jinja2 templates, Bootstrap 5
-* **Environment Variables:** Managed via `.env` file
+- Python
+- Flask
+- MongoDB with Flask-PyMongo
+- Pytest
+- Jenkins
+- GitHub Actions
 
----
+## Local Setup
 
-## Setup Instructions
-
-### 1. Clone the repository
+Clone the repository:
 
 ```bash
-git clone <your-repo-url>
-cd <repo-folder>
+git clone <your-github-repository-url>
+cd flask_Practice
 ```
 
-### 2. Create and activate a virtual environment
+Create and activate a virtual environment:
 
 ```bash
-python -m venv venv
-# Activate venv
-# Windows:
-venv\Scripts\activate
-# Linux / Mac:
-source venv/bin/activate
+python -m venv .venv
 ```
 
-### 3. Install dependencies
+On Windows:
 
 ```bash
+.venv\Scripts\activate
+```
+
+On Linux or macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-**`requirements.txt` example:**
+Create a `.env` file:
 
-```
-Flask
-Flask-PyMongo
-python-dotenv
-bson
+```env
+MONGO_URI=mongodb://localhost:27017/student_db
+SECRET_KEY=change-this-secret-key
 ```
 
-### 4. Configure environment variables
-
-Create a `.env` file in the project root:
-
-```
-MONGO_URI=<your-mongodb-connection-string>
-SECRET_KEY=<your-secret-key>
-```
-
-### 5. Run the application
+Run the application:
 
 ```bash
 python app.py
 ```
 
-Open your browser at: [http://localhost:8000](http://localhost:8000)
+Open the app at:
 
----
-
-## Project Structure
-
-```
-project/
-│
-├── templates/
-│   ├── base.html
-│   ├── index.html
-│   ├── add_student.html
-│   ├── update_student.html
-│
-├── app.py
-├── requirements.txt
-└── .env
+```text
+http://localhost:5000
 ```
 
----
+Run tests:
 
-## Screenshots
+```bash
+pytest -v
+```
 
-**Home Page**
-Lists all students with Edit/Delete buttons.
-- <img width="1902" height="607" alt="image" src="https://github.com/user-attachments/assets/a58a6a6d-4978-4769-8074-232e4d31e69d" />
+The tests use an in-memory fake database, so a live MongoDB server is not required for CI test execution.
 
+## Jenkins CI/CD Pipeline
 
-**Add Student**
-Form to add a new student.
-- <img width="1897" height="801" alt="image" src="https://github.com/user-attachments/assets/d65d25c3-ebb5-410a-adb1-e130ad7c5878" />
+The Jenkins pipeline is defined in `Jenkinsfile`.
 
+### Jenkins Prerequisites
 
-**Update Student**
-Form pre-filled with student details.
-- <img width="1905" height="897" alt="image" src="https://github.com/user-attachments/assets/04febf01-879f-431f-ab07-abcfb993acf1" />
+Install and configure:
 
+- Jenkins
+- Git
+- Python 3 and pip
+- Jenkins Pipeline plugin
+- GitHub plugin
+- Email Extension plugin
+- SMTP email settings in Jenkins
 
+### Jenkins Job Setup
 
----
+1. Fork this repository to your GitHub account.
+2. In Jenkins, create a new Pipeline job.
+3. Select `Pipeline script from SCM`.
+4. Choose Git as the SCM.
+5. Add your GitHub repository URL.
+6. Set the branch to `*/main`.
+7. Set the script path to `Jenkinsfile`.
+8. Save the job and run `Build Now`.
 
-## Notes
+### Jenkins Stages
 
-* Make sure MongoDB is running and accessible via the URI in `.env`
-* Delete action includes a confirmation page to prevent accidental deletion
-* Uses `ObjectId` from `bson` to work with MongoDB document IDs
-* If you use MongoDB Atlas on macOS, install dependencies again (`pip install -r requirements.txt`). This project now uses `certifi` CA bundle explicitly to avoid common TLS certificate verification failures with `pymongo`.
+The Jenkins pipeline contains these stages:
 
----
+| Stage | Purpose |
+| --- | --- |
+| Build | Creates a Python virtual environment and installs dependencies |
+| Test | Runs the Pytest test suite |
+| Package | Creates a deployable `.tar.gz` package |
+| Deploy | Deploys the package to a staging folder when the build runs on `main` |
+
+### Jenkins Trigger
+
+The `Jenkinsfile` includes:
+
+```groovy
+triggers {
+    githubPush()
+    pollSCM('H/5 * * * *')
+}
+```
+
+For GitHub push triggers, add this webhook in your GitHub repository:
+
+```text
+http://<your-jenkins-server-url>/github-webhook/
+```
+
+Set the webhook event to:
+
+```text
+Just the push event
+```
+
+### Jenkins Email Notifications
+
+The pipeline sends email on success and failure using `emailext`.
+
+Update this value in `Jenkinsfile`:
+
+```groovy
+NOTIFY_EMAIL = "your-email@example.com"
+```
+
+Also configure SMTP settings in Jenkins:
+
+```text
+Manage Jenkins -> System -> Extended E-mail Notification
+```
+
+## GitHub Actions CI/CD Pipeline
+
+The GitHub Actions workflow is defined in:
+
+```text
+.github/workflows/flask-ci-cd.yml
+```
+
+### Branch Requirements
+
+The repository should have:
+
+- `main` branch
+- `staging` branch
+
+Create the staging branch if it does not exist:
+
+```bash
+git checkout -b staging
+git push origin staging
+```
+
+### GitHub Actions Workflow Triggers
+
+The workflow runs on:
+
+- Push to `main`
+- Push to `staging`
+- Pull requests to `main` or `staging`
+- Version tags such as `v1.0.0`
+
+### GitHub Actions Jobs
+
+| Job | Purpose |
+| --- | --- |
+| Install Dependencies and Run Tests | Installs Python dependencies and runs Pytest |
+| Build Application Package | Creates a deployable package and uploads it as an artifact |
+| Deploy to Staging | Runs when changes are pushed to the `staging` branch |
+| Deploy to Production | Runs when a version tag such as `v1.0.0` is pushed |
+
+### GitHub Secrets
+
+Add secrets from:
+
+```text
+GitHub repository -> Settings -> Secrets and variables -> Actions -> New repository secret
+```
+
+For staging deployment:
+
+| Secret | Description |
+| --- | --- |
+| `STAGING_HOST` | Staging server hostname or IP address |
+| `STAGING_USER` | SSH username for staging server |
+| `STAGING_PATH` | Deployment path on staging server |
+| `STAGING_SSH_KEY` | Private SSH key for staging deployment |
+
+For production deployment:
+
+| Secret | Description |
+| --- | --- |
+| `PRODUCTION_HOST` | Production server hostname or IP address |
+| `PRODUCTION_USER` | SSH username for production server |
+| `PRODUCTION_PATH` | Deployment path on production server |
+| `PRODUCTION_SSH_KEY` | Private SSH key for production deployment |
+
+If these secrets are not configured, the deploy jobs still create a local deployment package during the workflow run. This is useful for classroom demonstration screenshots. For real deployment, configure the secrets above.
+
+### Deploy to Staging
+
+Push changes to the `staging` branch:
+
+```bash
+git checkout staging
+git merge main
+git push origin staging
+```
+
+### Deploy to Production
+
+Create and push a release tag:
+
+```bash
+git checkout main
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+## Required Screenshots
+
+Include these screenshots in the final assignment submission:
+
+- Jenkins pipeline showing Build, Test, Package, and Deploy stages
+- Jenkins console output showing successful test execution
+- GitHub Actions workflow run on `main`
+- GitHub Actions workflow run on `staging`
+- GitHub Actions workflow run for a release tag such as `v1.0.0`
+
+## Submission
+
+Submit a text, Word, or PDF file containing your GitHub repository URL:
+
+```text
+GitHub Repository URL: https://github.com/<your-username>/<your-repository-name>
+```
+
+Upload that file to Vlearn.
 
 ## License
 
 MIT License
-
----
-
-
-

@@ -1,0 +1,9 @@
+GitHub Repository URL: https://github.com/<your-username>/<your-repository-name>
+
+Assignment: Graded Assignment - CI/CD Pipeline
+
+Included deliverables:
+- Jenkinsfile for Jenkins CI/CD pipeline
+- GitHub Actions workflow at .github/workflows/flask-ci-cd.yml
+- README.md documentation
+- Screenshots of Jenkins and GitHub Actions pipeline runs
