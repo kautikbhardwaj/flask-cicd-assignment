@@ -1,4 +1,4 @@
-GitHub Repository URL: https://github.com/<your-username>/<your-repository-name>
+GitHub Repository URL: https://github.com/Kautikbhardwaj/flask-cicd-assignment
 
 Assignment: Graded Assignment - CI/CD Pipeline
 
