@@ -17,10 +17,8 @@ pipeline {
                 script {
                     if (isUnix()) {
                         sh '''
-                            python3 -m venv .venv
-                            . .venv/bin/activate
-                            python -m pip install --upgrade pip
-                            pip install -r requirements.txt
+                            python3 -m pip install --user --upgrade pip
+                            python3 -m pip install --user -r requirements.txt
                         '''
                     } else {
                         bat '''
@@ -39,8 +37,7 @@ pipeline {
                 script {
                     if (isUnix()) {
                         sh '''
-                            . .venv/bin/activate
-                            pytest -v
+                            python3 -m pytest -v
                         '''
                     } else {
                         bat '''
