@@ -17,8 +17,8 @@ pipeline {
                 script {
                     if (isUnix()) {
                         sh '''
-                            python3 -m pip install --user --upgrade pip
-                            python3 -m pip install --user -r requirements.txt
+                            python3 -m pip install --user --break-system-packages --upgrade pip
+                            python3 -m pip install --user --break-system-packages -r requirements.txt
                         '''
                     } else {
                         bat '''
