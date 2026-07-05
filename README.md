@@ -31,7 +31,7 @@ Clone the repository:
 
 ```bash
 git clone <your-github-repository-url>
-cd flask_Practice
+cd flask-cicd-assignment
 ```
 
 Create and activate a virtual environment:
@@ -119,10 +119,10 @@ The Jenkins pipeline contains these stages:
 
 | Stage | Purpose |
 | --- | --- |
-| Build | Creates a Python virtual environment and installs dependencies |
+| Build | Installs Python dependencies with pip |
 | Test | Runs the Pytest test suite |
-| Package | Creates a deployable `.tar.gz` package |
-| Deploy | Deploys the package to a staging folder when the build runs on `main` |
+| Package | Creates a deployable application package |
+| Deploy | Deploys the package to a staging folder after tests pass |
 
 ### Jenkins Trigger
 
@@ -266,7 +266,7 @@ Include these screenshots in the final assignment submission:
 Submit a text, Word, or PDF file containing your GitHub repository URL:
 
 ```text
-GitHub Repository URL: https://github.com/<your-username>/<your-repository-name>
+GitHub Repository URL: https://github.com/kautikbhardwaj/flask-cicd-assignment
 ```
 
 Upload that file to Vlearn.
